@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                display: flex;
+            }
+        </style>
+    </head>
+    <body>
+        <section>
+            <h1>Great Houses</h1>
+            <ul id="houses"></ul>
+        </section>
+        <section id="houseDetails"></section>
+        <script>
+            const buildHouse = async (e) => {
+                e.preventDefault();
+                const req = await fetch(e.target.dataset.url);
+
+                if (req.ok) {
+                    const house = await req.json();
+
+                    const section = document.querySelector("#houseDetails");
+                    section.innerHTML = "";
+
+                    const title = document.createElement("h1");
+                    title.innerText = house.name;
+
+                    const region = document.createElement("p");
+                    region.innerText = "is located in " + house.region;
+
+                    section.appendChild(title);
+                    section.appendChild(region);
+                }
+            };
+
+            const getHouses = async () => {
+                const req = await fetch(
+                    "https://anapioficeandfire.com/api/houses/?pageSize=50"
+                );
+
+                if (req.ok) {
+                    const res = await req.json();
+
+                    const housesList = document.querySelector("#houses");
+                    housesList.innerHTML = "";
+
+                    res.forEach((house) => {
+                        const li = document.createElement("li");
+                        li.dataset.url = house.url;
+                        li.innerText = house.name;
+
+                        li.addEventListener("click", buildHouse);
+
+                        housesList.appendChild(li);
+                    });
+                }
+            };
+
+            getHouses();
+        </script>
+    </body>
+</html>
